@@ -1,0 +1,36 @@
+# Fichiers de build .NET
+**/bin/
+**/obj/
+**/*.user
+**/*.suo
+**/.vs/
+
+# Fichiers de packages
+**/packages/
+
+# Fichiers Git
+.git/
+.gitignore
+.gitattributes
+
+# Fichiers Docker (éviter les boucles infinies)
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Fichiers de configuration locale
+**/.vscode/
+**/.idea/
+**/*.swp
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# Fichiers de tests
+**/TestResults/
+
+# Documentation
+README.md
+LICENSE
+*.md

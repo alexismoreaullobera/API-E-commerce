@@ -1,19 +1,32 @@
-version: '3.8'
-
 services:
-  db:
-    image: postgres:15                    
-    container_name: ecommerce_postgres    
+  # Service API .NET
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce_api
     environment:
-      POSTGRES_DB: ecommerce              
-      POSTGRES_USER: postgres             
-      POSTGRES_PASSWORD: postgres         # (dev uniquement !)
+      - ConnectionStrings__DefaultConnection=Host=db;Database=ecommerce;Username=postgres;Password=postgres;Port=5432
+      - ASPNETCORE_ENVIRONMENT=Development
     ports:
-      - "5432:5432"                       
-    volumes:
-      - postgres_data:/var/lib/postgresql/data  
-    restart: unless-stopped               
+      - "5000:8080"
+    depends_on:
+      - db
+    restart: unless-stopped
 
+  # Service PostgreSQL
+  db:
+    image: postgres:15
+    container_name: ecommerce_postgres
+    environment:
+      POSTGRES_DB: ecommerce
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
 volumes:
   postgres_data:
