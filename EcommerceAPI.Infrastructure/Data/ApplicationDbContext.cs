@@ -1,3 +1,4 @@
+using EcommerceAPI.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace EcommerceAPI.Infrastructure.Data
@@ -8,6 +9,9 @@ namespace EcommerceAPI.Infrastructure.Data
             : base(options)
         {
         }
+
+        public DbSet<Product> Products { get; set; }
+
 
         // Méthode pour configurer le modèle de données (optionnel pour l'instant)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
