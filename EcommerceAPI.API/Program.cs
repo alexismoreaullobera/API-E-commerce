@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using EcommerceAPI.Infrastructure.Data;
 using EcommerceAPI.Application.Mappings;
+using EcommerceAPI.Domain.Interfaces;
+using EcommerceAPi.Infrastructure.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,7 +11,12 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
-builder.Services.AddAutoMapper(typeof(ProductProfile).Assembly);
+
+// Configuration AutoMapper
+builder.Services.AddAutoMapper(typeof(Program));
+
+// Configuration des repositories
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // ===== Services API =====
 builder.Services.AddEndpointsApiExplorer();
