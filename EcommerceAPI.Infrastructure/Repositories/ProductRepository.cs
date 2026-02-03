@@ -17,8 +17,8 @@ public class ProductRepository : IProductRepository
     public async Task<Product> CreateAsync(Product product)
     {
         product.Id = Guid.NewGuid();
-        product.CreatedAt = DateTime.Now;
-        product.UpdatedAt = DateTime.Now;
+        product.CreatedAt = DateTime.UtcNow;
+        product.UpdatedAt = DateTime.UtcNow;
 
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
@@ -26,23 +26,35 @@ public class ProductRepository : IProductRepository
         return product;
     }
 
-    public Task DeleteAsync(Guid id)
+    public async Task DeleteAsync(Guid id)
     {
-        throw new NotImplementedException();
+        Product? product = await _context.Products.FindAsync(id);
+        if (product is null)
+        {
+            return;
+        }
+
+        _context.Products.Remove(product);
+        await _context.SaveChangesAsync();
     }
 
-    public Task<IEnumerable<Product>> GetAllAsync()
+    public async Task<IEnumerable<Product>> GetAllAsync()
     {
-        throw new NotImplementedException();
+        return await _context.Products.ToListAsync();
     }
 
-    public Task<Product?> GetByIdAsync(Guid id)
+    public async Task<Product?> GetByIdAsync(Guid id)
     {
-        throw new NotImplementedException();
+        return await _context.Products.FindAsync(id);
     }
 
-    public Task<Product> UpdateAsync(Product product)
+    public async Task<Product> UpdateAsync(Product product)
     {
-        throw new NotImplementedException();
+        product.UpdatedAt = DateTime.UtcNow;
+
+        _context.Products.Update(product);
+        await _context.SaveChangesAsync();
+
+        return product;
     }
 }
