@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using EcommerceAPI.Infrastructure.Data;
-using EcommerceAPI.Application.Mappings;
 using EcommerceAPI.Domain.Interfaces;
 using EcommerceAPi.Infrastructure.Repositories;
 using FluentValidation.AspNetCore;

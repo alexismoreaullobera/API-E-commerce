@@ -1,4 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using EcommerceAPI.Application.DTOs;
 using EcommerceAPI.Application.Interfaces;
@@ -34,20 +33,14 @@ public class ProductService : IProductService
 
     public async Task<IEnumerable<ProductDto>> GetAllProductsAsync()
     {
-        // IEnumerable<Product> products = await _repository.GetAllAsync();
-        // List<ProductDto> productDtos = new List<ProductDto>();
-
-        // foreach (Product product in products)
-        // {
-        //     productDtos.Add(_mapper.Map<ProductDto>(product));
-        // }
-
-        return (await _repository.GetAllAsync()).Select(x => _mapper.Map<ProductDto>(x));
+        IEnumerable<Product> products = await _repository.GetAllAsync();
+        return _mapper.Map<IEnumerable<ProductDto>>(products);
     }
 
-    public async Task<ProductDto> GetProductByIdAsync(Guid id)
+    public async Task<ProductDto?> GetProductByIdAsync(Guid id)
     {
-        return _mapper.Map<ProductDto>(await _repository.GetByIdAsync(id));
+        Product? product = await _repository.GetByIdAsync(id);
+        return product == null ? null : _mapper.Map<ProductDto>(product);
     }
 
     public async Task<ProductDto> UpdateProductAsync(Guid id, UpdateProductDto updateDto)

@@ -2,6 +2,7 @@ using EcommerceAPI.Application.DTOs;
 
 namespace EcommerceAPI.Application.Interfaces;
 
+
 public interface IProductService
 {
     Task<ProductDto> CreateProductAsync(CreateProductDto createDto);

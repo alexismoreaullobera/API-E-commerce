@@ -23,6 +23,5 @@ public class UpdateProductDtoValidator : AbstractValidator<UpdateProductDto>
 
         RuleFor(x => x.ImageUrl)
             .NotEmpty().WithMessage("L'URL de l'image est obligatoire");
-
     }
 }
