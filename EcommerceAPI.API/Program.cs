@@ -5,6 +5,10 @@ using EcommerceAPi.Infrastructure.Repositories;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using EcommerceAPI.Application.Validators;
+using EcommerceAPI.Application.Interfaces;
+using EcommerceAPI.Application.Services;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,16 +21,31 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Configuration AutoMapper
 builder.Services.AddAutoMapper(typeof(Program));
 
-//Configuration FluentValidation
+// Configuration FluentValidation
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateProductDtoValidator>();
+
+//Configuation des services
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // Configuration des repositories
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // ===== Services API =====
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "EcommerceAPI",
+        Version = "v1",
+        Description = "API E-commerce avec Clean Archi"
+    });
+
+    string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    options.IncludeXmlComments(xmlPath);
+});
 
 var app = builder.Build();
 
