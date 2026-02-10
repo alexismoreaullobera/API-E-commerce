@@ -9,6 +9,7 @@ using EcommerceAPI.Application.Interfaces;
 using EcommerceAPI.Application.Services;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using EcommerceAPI.Application.Mappings;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 // Configuration AutoMapper
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(ProductProfile));
 
 // Configuration FluentValidation
 builder.Services.AddFluentValidationAutoValidation();
@@ -32,6 +33,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
 // ===== Services API =====
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
@@ -57,5 +59,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.MapControllers();
 
 app.Run();
