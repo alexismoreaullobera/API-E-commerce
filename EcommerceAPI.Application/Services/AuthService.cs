@@ -3,6 +3,11 @@ using EcommerceAPI.Application.DTOs;
 using EcommerceAPI.Domain.Entities;
 using AutoMapper;
 using EcommerceAPI.Domain.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace EcommerceAPI.Application.Services;
 
@@ -10,19 +15,21 @@ public class AuthService : IAuthService
 {
     private readonly IMapper _mapper;
     private readonly IUserRepository _repository;
+    private readonly IConfiguration _configuration;
 
-    public AuthService(IMapper mapper, IUserRepository userRepository)
+    public AuthService(IMapper mapper, IUserRepository userRepository, IConfiguration configuration)
     {
         _mapper = mapper;
         _repository = userRepository;
+        _configuration = configuration;
     }
 
     public async Task<AuthResponseDto> RegisterAsync(RegisterDto dto)
     {
-        User existingUser = _mapper.Map<User>(dto);
-        if (existingUser == null)
+        User? existingUser = await _repository.GetByEmailAsync(dto.Email);
+        if (existingUser != null)
         {
-            throw new Exception("User already exists");
+            throw new Exception("Email already in use");
         }
 
         User user = new User
@@ -65,7 +72,30 @@ public class AuthService : IAuthService
 
     private string GenerateJwtToken(User user)
     {
-        // TODO: À implémenter avec System.IdentityModel.Tokens.Jwt
-        throw new NotImplementedException();
+        string? secretKey = _configuration["Jwt:SecretKey"];
+        string? issuer = _configuration["Jwt:Issuer"];
+        string? audience = _configuration["Jwt:Audience"];
+        int expirationMinutes = int.Parse(_configuration["Jwt:ExpirationMinutes"]!);
+
+        SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey!));
+        SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        Claim[] claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role),
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+
+        var token = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(expirationMinutes),
+            signingCredentials: credentials
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
