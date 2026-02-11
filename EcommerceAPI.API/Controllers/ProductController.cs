@@ -29,7 +29,7 @@ public class ProductController : ControllerBase
     }
 
     /// <summary>
-    /// Récupmère un produit par son Id
+    /// Récupère un produit par son Id
     /// </summary>
     /// <param name="id">Id du produit</param>
     /// <returns>Détails du produit</returns>
