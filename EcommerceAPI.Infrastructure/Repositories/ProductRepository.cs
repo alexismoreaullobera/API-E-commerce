@@ -3,7 +3,7 @@ using EcommerceAPI.Domain.Interfaces;
 using EcommerceAPI.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace EcommerceAPi.Infrastructure.Repositories;
+namespace EcommerceAPI.Infrastructure.Repositories;
 
 public class ProductRepository : IProductRepository
 {

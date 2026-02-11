@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using EcommerceAPI.Infrastructure.Data;
 using EcommerceAPI.Domain.Interfaces;
-using EcommerceAPi.Infrastructure.Repositories;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using EcommerceAPI.Application.Validators;
@@ -10,6 +9,10 @@ using EcommerceAPI.Application.Services;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 using EcommerceAPI.Application.Mappings;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using EcommerceAPI.Infrastructure.Repositories;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +34,35 @@ builder.Services.AddScoped<IProductService, ProductService>();
 
 // Configuration des repositories
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
+// ===== Configuration des services d'authentification =====
+string jwtSecretKey = builder.Configuration["Jwt:SecretKey"] ?? throw new Exception("JWT Secret Key is not configured.");
+string jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? throw new Exception("JWT Issuer is not configured.");
+string jwtAudience = builder.Configuration["Jwt:Audience"] ?? throw new Exception("JWT Audience is not configured.");
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecretKey!))
+    };
+});
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // ===== Services API =====
 builder.Services.AddControllers();
@@ -59,6 +91,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
