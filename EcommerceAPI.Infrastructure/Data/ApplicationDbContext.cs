@@ -11,13 +11,13 @@ namespace EcommerceAPI.Infrastructure.Data
         }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<User> Users { get; set; }
 
 
         // Méthode pour configurer le modèle de données (optionnel pour l'instant)
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-
         }
     }
 }
