@@ -1,5 +1,6 @@
 using EcommerceAPI.Application.DTOs;
 using EcommerceAPI.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EcommerceAPi.API.Controllers;
@@ -21,6 +22,7 @@ public class ProductController : ControllerBase
     /// <returns>Liste des produits</returns>
     /// <response code="200">Succès</response>
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(IEnumerable<ProductDto>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll()
     {
@@ -36,6 +38,7 @@ public class ProductController : ControllerBase
     /// <response code="200">Produit trouvé</response>
     /// <response code="404">Produit introuvable</response>
     [HttpGet("{id}")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(ProductDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetById([FromRoute] Guid id)
@@ -52,6 +55,7 @@ public class ProductController : ControllerBase
     /// <returns>Le produit créé</returns>
     /// <response code="200">Produit créé</response>
     [HttpPost]
+    [Authorize]
     [ProducesResponseType(typeof(ProductDto), StatusCodes.Status201Created)]
     public async Task<IActionResult> Create([FromBody] CreateProductDto createProductDto)
     {
@@ -66,6 +70,7 @@ public class ProductController : ControllerBase
     /// <response code="404">Produit non trouvé</response>
     /// <response code="204">Produit supprimé</response>
     [HttpDelete("{id}")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     public async Task<IActionResult> Delete([FromRoute] Guid id)
@@ -89,6 +94,7 @@ public class ProductController : ControllerBase
     /// <response code="404">Produit non trouvé</response>
     /// <response code="200">Produit trouvé et modifié</response>
     [HttpPut("{id}")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateProductDto updateProductDto)
